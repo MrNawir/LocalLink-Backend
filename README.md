@@ -1,10 +1,35 @@
 # LocalLink Backend API
 
-A RESTful API built with Flask and SQLAlchemy for the LocalLink local services marketplace.
+> A RESTful API built with Flask and SQLAlchemy for the LocalLink local services marketplace.
 
-![Python](https://img.shields.io/badge/Python-3.8-blue)
-![Flask](https://img.shields.io/badge/Flask-Latest-green)
-![SQLite](https://img.shields.io/badge/SQLite-3-orange)
+[![Python](https://img.shields.io/badge/Python-3.8-blue?style=flat-square)](https://python.org)
+[![Flask](https://img.shields.io/badge/Flask-3.0-green?style=flat-square)](https://flask.palletsprojects.com)
+[![SQLite](https://img.shields.io/badge/SQLite-3-orange?style=flat-square)](https://sqlite.org)
+[![License](https://img.shields.io/badge/License-MIT-purple?style=flat-square)](LICENSE)
+
+## Live Demo
+
+**[View Live App](https://locallink.dpdns.org)**
+
+---
+
+## Contributors
+
+### Backend Team
+| Name | Role |
+|------|------|
+| Ibrahim Abdu | Backend Developer |
+| Esther Nekesa | Backend Developer |
+| Julius Mutinda | Backend Developer |
+
+### Frontend Team
+| Name | Role |
+|------|------|
+| Abdimalik Kulow | Frontend Developer |
+| Megan Mumbi | Frontend Developer |
+| Abdullahi Omar | Frontend Developer |
+
+---
 
 ## Features
 
@@ -97,6 +122,10 @@ sudo systemctl start locallink-backend
 sudo systemctl enable locallink-backend
 ```
 
-## Authors
+---
 
-LocalLink Team - School Project 2026
+## License
+
+This project is part of a school project for educational purposes.
+
+**LocalLink Team - 2026**
