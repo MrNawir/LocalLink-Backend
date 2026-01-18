@@ -10,7 +10,7 @@ fake = Faker()
 # Verified Image Collection - High Quality Unsplash Images
 IMAGES = {
     # Cleaning - verified working URLs
-    "cleaning_main": "https://images.unsplash.com/photo-1581578731117-104f2a41bcbe?w=800&q=80",
+    "cleaning_main": "https://images.unsplash.com/photo-1581578731117-104f2a41bcbe?w=800",
     "cleaning_mop": "https://images.unsplash.com/photo-1558317374-067fb5f30001?w=800&q=80",
     "cleaning_kitchen": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=80", 
     "cleaning_supplies": "https://images.unsplash.com/photo-1563453392212-326f5e854473?w=800&q=80",
