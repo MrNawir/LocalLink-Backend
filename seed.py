@@ -7,32 +7,31 @@ from datetime import datetime, timedelta
 # Initialize Faker for generating dummy data
 fake = Faker()
 
-# Verified Image Collection (Status 200 Checked)
-# Using high-quality images from Unsplash to ensure the app looks good immediately
+# Verified Image Collection - High Quality Unsplash Images
 IMAGES = {
-    # Cleaning
-    "cleaning_main": "https://images.unsplash.com/photo-1581578731117-104f2a41bcbe?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-    "cleaning_mop": "https://images.unsplash.com/photo-1528740561666-dc24705f08a7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-    "cleaning_kitchen": "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
-    "cleaning_supplies": "https://images.unsplash.com/photo-1584622050111-993a426fbf0a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+    # Cleaning - verified working URLs
+    "cleaning_main": "https://images.unsplash.com/photo-1581578731117-104f2a41bcbe?w=800",
+    "cleaning_mop": "https://images.unsplash.com/photo-1558317374-067fb5f30001?w=800&q=80",
+    "cleaning_kitchen": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=80", 
+    "cleaning_supplies": "https://images.unsplash.com/photo-1563453392212-326f5e854473?w=800&q=80",
     
-    # IT Support
-    "it_main": "https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
-    "it_repair": "https://images.unsplash.com/photo-1597852074816-d933c7d2b988?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
-    "it_error": "https://images.unsplash.com/photo-1563770095-39d468a9b324?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-    "it_code": "https://images.unsplash.com/photo-1588872657578-1a416556363e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+    # IT Support - verified working URLs
+    "it_main": "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=800&q=80", 
+    "it_repair": "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=800&q=80", 
+    "it_wifi": "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=800&q=80",
+    "it_virus": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80",
     
-    # Plumbing
-    "plumbing_main": "https://images.unsplash.com/photo-1585704032915-c3400ca199e7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
-    "plumbing_repair": "https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
-    "plumbing_sink": "https://images.unsplash.com/photo-1584622050111-993a426fbf0a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-    "plumbing_drain": "https://images.unsplash.com/photo-1621905476059-5f8df79b8411?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+    # Plumbing - verified working URLs
+    "plumbing_main": "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=800&q=80", 
+    "plumbing_repair": "https://images.unsplash.com/photo-1585704032915-c3400ca199e7?w=800&q=80", 
+    "plumbing_sink": "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=800&q=80",
+    "plumbing_drain": "https://images.unsplash.com/photo-1542013936693-884638332954?w=800&q=80",
     
-    # Gardening
-    "gardening_main": "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-    "gardening_mower": "https://images.unsplash.com/photo-1592419044706-39796d40f98c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
-    "gardening_flowers": "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
-    "gardening_tree": "https://images.unsplash.com/photo-1598902106739-16a75a9528ae?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+    # Gardening - verified working URLs
+    "gardening_main": "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&q=80",
+    "gardening_mower": "https://images.unsplash.com/photo-1558904541-efa843a96f01?w=800&q=80", 
+    "gardening_flowers": "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=800&q=80", 
+    "gardening_tree": "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=800&q=80"
 }
 
 # Pre-defined categories and services to ensure the app has realistic content
@@ -51,8 +50,8 @@ CATEGORIES_DB = [
         "image_url": IMAGES["it_main"],
         "services": [
             {"title": "Computer Repair & Diagnostics", "description": "Diagnose and fix hardware or software issues. We handle screen replacements, battery issues, and slow performance.", "image_url": IMAGES["it_repair"]},
-            {"title": "Home WiFi Optimization", "description": "Boost your internet speed and coverage. Specialized configuration for large homes and dead zones.", "image_url": IMAGES["it_error"]},
-            {"title": "Virus & Malware Removal", "description": "Secure your data and remove harmful software. Includes installation of premium antivirus protection.", "image_url": IMAGES["it_code"]}
+            {"title": "Home WiFi Optimization", "description": "Boost your internet speed and coverage. Specialized configuration for large homes and dead zones.", "image_url": IMAGES["it_wifi"]},
+            {"title": "Virus & Malware Removal", "description": "Secure your data and remove harmful software. Includes installation of premium antivirus protection.", "image_url": IMAGES["it_virus"]}
         ]
     },
     {
