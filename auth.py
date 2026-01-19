@@ -343,3 +343,88 @@ def admin_delete_booking(booking_id):
     db.session.commit()
     
     return jsonify({'message': 'Booking deleted'}), 200
+
+
+# ==================== PROVIDER ROUTES ====================
+
+@auth_bp.route('/provider/bookings', methods=['GET'])
+@jwt_required()
+def get_provider_bookings():
+    """Provider: Get all bookings for their services"""
+    from models import Booking, Service
+    
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+    
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+    
+    if user.role not in ['provider', 'admin']:
+        return jsonify({'error': 'Provider access required'}), 403
+    
+    # Get all services by this provider
+    provider_services = Service.query.filter_by(provider_id=user_id).all()
+    service_ids = [s.id for s in provider_services]
+    
+    # Get all bookings for those services
+    bookings = Booking.query.filter(Booking.service_id.in_(service_ids)).all()
+    
+    return jsonify([b.to_dict() for b in bookings]), 200
+
+
+@auth_bp.route('/provider/bookings/<int:booking_id>', methods=['PATCH'])
+@jwt_required()
+def update_provider_booking(booking_id):
+    """Provider: Update booking status (confirm, complete, etc.)"""
+    from models import Booking, Service
+    
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+    
+    if not user or user.role not in ['provider', 'admin']:
+        return jsonify({'error': 'Provider access required'}), 403
+    
+    booking = Booking.query.get(booking_id)
+    
+    if not booking:
+        return jsonify({'error': 'Booking not found'}), 404
+    
+    # Verify this booking belongs to provider's service
+    service = Service.query.get(booking.service_id)
+    if not service or service.provider_id != user_id:
+        return jsonify({'error': 'You can only update bookings for your services'}), 403
+    
+    data = request.get_json()
+    
+    if 'status' in data:
+        new_status = data['status']
+        if new_status in ['pending', 'confirmed', 'completed', 'cancelled']:
+            booking.status = new_status
+        else:
+            return jsonify({'error': 'Invalid status'}), 400
+    
+    if 'notes' in data:
+        booking.notes = data['notes']
+    
+    db.session.commit()
+    
+    return jsonify({
+        'message': 'Booking updated',
+        'booking': booking.to_dict()
+    }), 200
+
+
+@auth_bp.route('/provider/services', methods=['GET'])
+@jwt_required()
+def get_provider_services():
+    """Provider: Get all their services"""
+    from models import Service
+    
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+    
+    if not user or user.role not in ['provider', 'admin']:
+        return jsonify({'error': 'Provider access required'}), 403
+    
+    services = Service.query.filter_by(provider_id=user_id).all()
+    return jsonify([s.to_dict() for s in services]), 200
