@@ -10,7 +10,7 @@ fake = Faker()
 # Verified Image Collection - High Quality Unsplash Images
 IMAGES = {
     # Cleaning - verified working URLs
-    "cleaning_main": "https://images.unsplash.com/photo-1581578731117-104f2a41bcbe?w=800",
+    "cleaning_main": "https://images.unsplash.com/photo-1628177142898-93e36e4e3a50?w=800",
     "cleaning_mop": "https://images.unsplash.com/photo-1558317374-067fb5f30001?w=800&q=80",
     "cleaning_kitchen": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=80", 
     "cleaning_supplies": "https://images.unsplash.com/photo-1563453392212-326f5e854473?w=800&q=80",
@@ -102,6 +102,16 @@ def seed_data():
             "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80"
         ]
 
+        # Create Admin User
+        admin = User(
+            username='admin',
+            email='admin@locallink.com',
+            role='admin',
+            image_url='https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=256'
+        )
+        admin.password_hash = 'admin123'
+        db.session.add(admin)
+        
         # Create 5 Providers
         for i, img_url in enumerate(provider_images):
             u = User(
@@ -110,7 +120,7 @@ def seed_data():
                 role='provider',
                 image_url=img_url
             )
-            u.password_hash = 'password' # Default password
+            u.password_hash = 'password123'
             providers.append(u)
             db.session.add(u)
             
@@ -122,7 +132,7 @@ def seed_data():
                 role='client',
                 image_url=fake.image_url()
             )
-            u.password_hash = 'password' # Default password
+            u.password_hash = 'password123'
             clients.append(u)
             db.session.add(u)
             
@@ -155,24 +165,79 @@ def seed_data():
         # Create Bookings
         print("Creating bookings...")
         all_services = Service.query.all()
-        for _ in range(15):
+        
+        # Create specific demo bookings for each provider to show in their dashboard
+        # This ensures each provider has visible upcoming gigs for demo purposes
+        for i, provider in enumerate(providers):
+            # Get services for this provider
+            provider_services = [s for s in all_services if s.provider_id == provider.id]
+            
+            if provider_services:
+                # Create 2-3 upcoming confirmed bookings per provider
+                for j in range(min(3, len(provider_services))):
+                    service = provider_services[j % len(provider_services)]
+                    client = clients[j % len(clients)]
+                    
+                    # Create confirmed booking for upcoming days
+                    b = Booking(
+                        service_id=service.id,
+                        client_id=client.id,
+                        date=datetime.now() + timedelta(days=j+1, hours=10),
+                        status='confirmed',
+                        notes=f"Please arrive on time. Looking forward to your service!",
+                        location=fake.address(),
+                        contact_phone="0712345678"
+                    )
+                    db.session.add(b)
+                
+                # Create 1 pending booking per provider
+                service = random.choice(provider_services)
+                client = random.choice(clients)
+                b = Booking(
+                    service_id=service.id,
+                    client_id=client.id,
+                    date=datetime.now() + timedelta(days=5, hours=14),
+                    status='pending',
+                    notes="New booking request - awaiting confirmation",
+                    location=fake.address(),
+                    contact_phone="0723456789"
+                )
+                db.session.add(b)
+                
+                # Create 1-2 completed bookings per provider (for history)
+                for j in range(2):
+                    service = random.choice(provider_services)
+                    client = random.choice(clients)
+                    b = Booking(
+                        service_id=service.id,
+                        client_id=client.id,
+                        date=datetime.now() - timedelta(days=j+3),
+                        status='completed',
+                        notes="Great service, very professional!",
+                        location=fake.address(),
+                        contact_phone="0734567890"
+                    )
+                    db.session.add(b)
+        
+        # Add some random bookings for variety
+        for _ in range(5):
             service = random.choice(all_services)
             client = random.choice(clients)
             
-            # Create booking in the near future
             b = Booking(
                 service_id=service.id,
                 client_id=client.id,
                 date=fake.future_datetime(end_date="+30d"),
-                status=random.choice(['pending', 'confirmed', 'completed']),
+                status=random.choice(['pending', 'confirmed']),
                 notes=fake.sentence(),
                 location=fake.address(),
                 contact_phone=fake.phone_number()
             )
             db.session.add(b)
+        
         db.session.commit()
         
-        print("Seeding complete! Database populated with 200 OK images.")
+        print("Seeding complete! Database populated with demo data for providers.")
 
 if __name__ == '__main__':
     seed_data()

@@ -7,9 +7,25 @@
 [![SQLite](https://img.shields.io/badge/SQLite-3-orange?style=flat-square)](https://sqlite.org)
 [![License](https://img.shields.io/badge/License-MIT-purple?style=flat-square)](LICENSE)
 
+## Related Repositories
+
+| Repository | Description |
+|------------|-------------|
+| **[LocalLink-Frontend](https://github.com/MrNawir/LocalLink-Frontend)** | React frontend application |
+| **[LocalLink-Backend](https://github.com/MrNawir/LocalLink-Backend)** | Flask API (this repo) |
+
 ## Live Demo
 
 **[View Live App](https://locallink.dpdns.org)**
+
+### Deployment Details
+
+The live demo is hosted on a **Debian 13 (Trixie) VPS** with the following setup:
+
+- **Web Server**: Nginx (reverse proxy)
+- **Process Manager**: systemd services for backend and frontend
+- **Domain**: Free subdomain from [digitalplat.org](https://domain.digitalplat.org)
+- **CDN/Security**: Cloudflare proxy for SSL and DDoS protection
 
 ---
 
@@ -34,93 +50,183 @@
 ## Features
 
 - **RESTful API** - Full CRUD operations for services, categories, bookings, and users
+- **JWT Authentication** - Secure token-based authentication with Flask-JWT-Extended
+- **Password Hashing** - Bcrypt encryption for secure password storage
+- **Role-Based Access** - Client, Provider, and Admin roles with protected endpoints
 - **SQLite Database** - Lightweight, file-based database for easy development
 - **CORS Enabled** - Cross-origin requests supported for frontend integration
 - **Seed Data** - Pre-populated with realistic demo data and high-quality images
 
 ## Tech Stack
 
-- **Framework**: Flask
+- **Framework**: Flask 3.0
 - **ORM**: Flask-SQLAlchemy
 - **Database**: SQLite
-- **Migrations**: Flask-Migrate
+- **Authentication**: Flask-JWT-Extended + Flask-Bcrypt
 - **CORS**: Flask-CORS
 
+---
+
+## Quick Start (Local Development)
+
+> Complete setup in under 5 minutes.
+
+### Prerequisites
+
+- **Python 3.8+** (check with `python3 --version`)
+- **pip** (Python package manager)
+- **Node.js 18+** (for frontend - check with `node --version`)
+
+### Step 1: Clone Both Repositories
+
+```bash
+# Create project folder
+mkdir LocalLink && cd LocalLink
+
+# Clone backend
+git clone https://github.com/MrNawir/LocalLink-Backend.git
+cd LocalLink-Backend
+
+# Switch to development branch
+git checkout ibrahim/dev
+```
+
+### Step 2: Install Backend Dependencies
+
+```bash
+# Option A: Using pipenv (recommended)
+pip install pipenv
+pipenv install
+pipenv shell
+
+# Option B: Using pip directly
+pip install -r requirements.txt
+```
+
+### Step 3: Initialize Database & Seed Data
+
+```bash
+# Create database tables
+python -c "from config import app, db; from models import *; app.app_context().push(); db.create_all()"
+
+# Seed with demo data
+python seed.py
+```
+
+### Step 4: Start the Backend Server
+
+```bash
+python app.py
+```
+
+Backend running at `http://localhost:5555`
+
+### Step 5: Setup Frontend (New Terminal)
+
+```bash
+# Navigate to frontend
+cd ../
+git clone https://github.com/MrNawir/LocalLink-Frontend.git
+cd LocalLink-Frontend
+git checkout ibrahim/dev
+
+# Install and run
+cd client
+npm install
+npm run dev
+```
+
+Frontend running at `http://localhost:5173`
+
+---
+
+## Test Accounts
+
+| Role | Email | Password | Dashboard |
+|------|-------|----------|-----------|
+| **Admin** | admin@locallink.com | admin123 | `/admin` |
+| **Provider** | provider0@example.com | password123 | `/provider` |
+| **Client** | client0@example.com | password123 | `/dashboard` |
+
+---
+
 ## API Endpoints
+
+### Public Endpoints
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/categories` | List all categories |
 | GET | `/categories/:id` | Get single category |
-| POST | `/categories` | Create category |
-| PATCH | `/categories/:id` | Update category |
-| DELETE | `/categories/:id` | Delete category |
 | GET | `/services` | List all services |
 | GET | `/services/:id` | Get single service |
-| POST | `/services` | Create service |
-| PATCH | `/services/:id` | Update service |
-| DELETE | `/services/:id` | Delete service |
-| GET | `/bookings` | List all bookings |
-| POST | `/bookings` | Create booking |
-| PATCH | `/bookings/:id` | Update booking status |
 | GET | `/users` | List all users |
 
-## Installation
+### Authentication Endpoints
 
-### Prerequisites
-- Python 3.8.13 (recommended via pyenv)
-- pipenv
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/auth/signup` | Register new user |
+| POST | `/auth/login` | Login and get JWT token |
+| GET | `/auth/me` | Get current user profile |
+| PATCH | `/auth/me` | Update profile |
+| POST | `/auth/change-password` | Change password |
 
-### Setup
+### Protected Endpoints (Require JWT)
 
-1. **Install Python 3.8.13 with pyenv:**
-   ```bash
-   pyenv install 3.8.13
-   pyenv local 3.8.13
-   ```
+| Method | Endpoint | Description | Role |
+|--------|----------|-------------|------|
+| POST | `/bookings` | Create booking | Any |
+| GET | `/auth/my-bookings` | Get user's bookings | Client |
+| PATCH | `/auth/my-bookings/:id` | Cancel/reschedule | Client |
+| GET | `/provider/bookings` | Get provider's gigs | Provider |
+| PATCH | `/provider/bookings/:id` | Update gig status | Provider |
+| GET | `/admin/users` | List all users | Admin |
+| PATCH | `/admin/users/:id` | Update user role | Admin |
+| DELETE | `/admin/users/:id` | Delete user | Admin |
 
-2. **Install dependencies:**
-   ```bash
-   pipenv install
-   ```
-
-3. **Create database tables:**
-   ```bash
-   pipenv run python -c "from config import app, db; from models import *; app.app_context().push(); db.create_all()"
-   ```
-
-4. **Seed the database:**
-   ```bash
-   pipenv run python seed.py
-   ```
-
-5. **Run the server:**
-   ```bash
-   pipenv run python app.py
-   ```
-
-The API will be available at `http://localhost:5555`
+---
 
 ## Project Structure
 
 ```
 LocalLink-Backend/
-├── app.py          # Main application with all API routes
+├── app.py          # Main application with API routes
+├── auth.py         # Authentication blueprint (JWT, roles)
 ├── config.py       # Flask configuration and extensions
 ├── models.py       # SQLAlchemy models (User, Service, Category, Booking)
-├── seed.py         # Database seeding script
-├── Pipfile         # Python dependencies
+├── seed.py         # Database seeding script with demo data
+├── Pipfile         # Python dependencies (pipenv)
+├── requirements.txt # Python dependencies (pip)
 └── README.md
 ```
 
-## Running as a Service
+## Database Models
 
-The backend can run as a systemd service for production:
-
-```bash
-sudo systemctl start locallink-backend
-sudo systemctl enable locallink-backend
 ```
+User (id, username, email, password_hash, role, is_active, image_url)
+  └── role: 'client' | 'provider' | 'admin'
+
+Category (id, name, image_url)
+  └── has many Services
+
+Service (id, title, description, price, image_url, provider_id, category_id)
+  └── belongs to User (provider) and Category
+
+Booking (id, service_id, client_id, date, status, notes, location, contact_phone)
+  └── status: 'pending' | 'confirmed' | 'completed' | 'cancelled'
+```
+
+---
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| `ModuleNotFoundError` | Run `pipenv install` or `pip install -r requirements.txt` |
+| Database errors | Delete `instance/locallink.db` and re-run seed |
+| CORS errors | Ensure backend runs on port 5555, frontend on 5173 |
+| JWT errors | Token expired - login again to get new token |
 
 ---
 

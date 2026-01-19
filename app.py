@@ -1,23 +1,11 @@
 from flask import jsonify, request
 from config import app, db
 from models import User, Service, Category, Booking
+from auth import auth_bp
 from datetime import datetime
 
-# ==========================================
-# Services Resource
-# ==========================================
-class Services(Resource):
-    """
-    Resource for handling general Service operations.
-    """
-    def get(self):
-        """
-        Fetch all available services from the database.
-        """
-        # Query all services and convert to dictionary format
-        services = [s.to_dict() for s in Service.query.all()]
-        # Return list of services
-        return make_response(services, 200)
+# Register auth blueprint
+app.register_blueprint(auth_bp)
 
 # ==================== ROOT ====================
 @app.route("/")
@@ -197,22 +185,6 @@ def get_users():
 def get_user(id):
     user = User.query.get_or_404(id)
     return jsonify(user.to_dict())
-
-# ==========================================
-# ServiceByID Resource
-# ==========================================
-class ServiceByID(Resource):
-    """
-    Resource for handling operations on a specific service by ID.
-    """
-    def get(self, id):
-        """
-        Fetch a single service by its ID.
-        """
-        service = Service.query.filter_by(id=id).first()
-        if not service:
-            return make_response({"error": "Service not found"}, 404)
-        return make_response(service.to_dict(), 200)
 
 # ==================== RUN ====================
 if __name__ == "__main__":
