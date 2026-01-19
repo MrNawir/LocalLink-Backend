@@ -69,8 +69,6 @@ The live demo is hosted on a **Debian 13 (Trixie) VPS** with the following setup
 
 ## Quick Start (Local Development)
 
-> Complete setup in under 5 minutes.
-
 ### Prerequisites
 
 - **Python 3.8+** (check with `python3 --version`)
