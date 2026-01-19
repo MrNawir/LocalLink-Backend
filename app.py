@@ -1,7 +1,11 @@
 from flask import jsonify, request
 from config import app, db
 from models import User, Service, Category, Booking
+from auth import auth_bp
 from datetime import datetime
+
+# Register auth blueprint
+app.register_blueprint(auth_bp)
 
 # ==================== ROOT ====================
 @app.route("/")

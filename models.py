@@ -1,4 +1,4 @@
-from config import db
+from config import db, bcrypt
 from datetime import datetime
 
 
@@ -8,9 +8,10 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    _password_hash = db.Column(db.String(128))
-    role = db.Column(db.String(20), default='client')  # 'client' or 'provider'
+    _password_hash = db.Column(db.String(256))
+    role = db.Column(db.String(20), default='client')  # 'client', 'provider', or 'admin'
     image_url = db.Column(db.String(500))
+    is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Relationships
@@ -19,12 +20,14 @@ class User(db.Model):
     
     @property
     def password_hash(self):
-        return self._password_hash
+        raise AttributeError('Password is not readable')
     
     @password_hash.setter
     def password_hash(self, password):
-        # Simple hash for demo purposes
-        self._password_hash = password
+        self._password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+    
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self._password_hash, password)
     
     def to_dict(self):
         return {
@@ -33,6 +36,7 @@ class User(db.Model):
             'email': self.email,
             'role': self.role,
             'image_url': self.image_url,
+            'is_active': self.is_active,
             'created_at': self.created_at.isoformat() if self.created_at else None
         }
 

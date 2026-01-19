@@ -102,6 +102,16 @@ def seed_data():
             "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80"
         ]
 
+        # Create Admin User
+        admin = User(
+            username='admin',
+            email='admin@locallink.com',
+            role='admin',
+            image_url='https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=256'
+        )
+        admin.password_hash = 'admin123'
+        db.session.add(admin)
+        
         # Create 5 Providers
         for i, img_url in enumerate(provider_images):
             u = User(
@@ -110,7 +120,7 @@ def seed_data():
                 role='provider',
                 image_url=img_url
             )
-            u.password_hash = 'password' # Default password
+            u.password_hash = 'password123'
             providers.append(u)
             db.session.add(u)
             
@@ -122,7 +132,7 @@ def seed_data():
                 role='client',
                 image_url=fake.image_url()
             )
-            u.password_hash = 'password' # Default password
+            u.password_hash = 'password123'
             clients.append(u)
             db.session.add(u)
             
